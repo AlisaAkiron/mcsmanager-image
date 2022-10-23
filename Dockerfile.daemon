@@ -1,18 +1,18 @@
 FROM node:14-slim
 
 RUN apt update && apt install -y git
-RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/docker-mcsm/daemon
-RUN cd /opt/docker-mcsm/daemon && npm i --production
+RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon
+RUN cd /opt/mcsmanager/daemon && npm i --production
 
-RUN mkdir -p /opt/docker-mcsm/daemon/data
+RUN mkdir -p /opt/mcsmanager/daemon/data
 
 ENV TZ=Asia/Shanghai
 
 VOLUME [ "/var/run/docker.sock" ]
-VOLUME [ "/opt/docker-mcsm/daemon/data" ]
+VOLUME [ "/opt/mcsmanager/daemon/data" ]
 
 EXPOSE 24444
 
-WORKDIR /opt/docker-mcsm/daemon
+WORKDIR /opt/mcsmanager/daemon
 
 ENTRYPOINT [ "node", "app.js" ]
