@@ -4,9 +4,12 @@ RUN apt update && apt install -y git
 RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/docker-mcsm/daemon
 RUN cd /opt/docker-mcsm/daemon && npm i --production
 
+RUN mkdir -p /opt/docker-mcsm/daemon/data
+
 ENV TZ=Asia/Shanghai
 
 VOLUME [ "/var/run/docker.sock" ]
+VOLUME [ "/opt/docker-mcsm/daemon/data" ]
 
 EXPOSE 24444
 
