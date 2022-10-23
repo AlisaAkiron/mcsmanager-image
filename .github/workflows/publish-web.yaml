@@ -21,7 +21,7 @@ jobs:
 
       - name: Read Version file
         id: getversion
-        run: echo "version=$(cat release-versions/mcsm-version.txt)" >> $GITHUB_OUTPUT
+        run: echo "version=$(cat release-versions/mcsm-version-web.txt)" >> $GITHUB_OUTPUT
 
       - name: "Run build docker script"
         run: ./build-docker-web.sh ${{ steps.getversion.outputs.version }}
