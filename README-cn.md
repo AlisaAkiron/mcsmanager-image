@@ -1,22 +1,22 @@
 # MCSManager Docker Image
 
-Docker Image for [MCSManager](https://github.com/MCSManager/MCSManager/)
+[MCSManager](https://github.com/MCSManager/MCSManager/) 的 Docker 镜像
 
 [简体中文](README-cn.md) | [English](README.md)
 
 ## Tag
 
-- `latest`：The latest version
-- `9.6.0-amd64`：Specific version and architecture
-- `9.6.0`：Specific version, the corresponding image will be selected automatically according to the system architecture
-- `9.6`：Specific major and minor version, the latest Patch version will be pointed to
-- `9`：Specific major version, the latest version under the current major version number will be pointed to
+- `latest`：最新版本
+- `9.6.0-amd64`：指定版本和架构
+- `9.6.0`：指定版本，将根据系统架构自动选择对应的镜像
+- `9.6`：指定主版本和次版本，将指向最新的 Patch 版本
+- `9`：指定主版本，将指向当前大版本号下的最新版本
 
-## Usage
+## 使用方法
 
 ### Web
 
-Use Docker CLI
+使用 Docker CLI
 
 ```bash
 docker run -it -d \
@@ -26,7 +26,7 @@ docker run -it -d \
     alisaqaq/mcsmanager-web:latest
 ```
 
-Use Docker Compose
+使用 Docker Compose
 
 ```yaml
 version: "3"
@@ -44,7 +44,7 @@ services:
 
 ### Daemon
 
-Use Docker CLI
+使用 Docker CLI
 
 ```bash
 docker run -it -d \
@@ -55,7 +55,7 @@ docker run -it -d \
     alisaqaq/mcsmanager-daemon:latest
 ```
 
-Use Docker Compose
+使用 Docker Compose
 
 ```yaml
 version: "3"
@@ -72,13 +72,13 @@ services:
     restart: unless-stopped
 ```
 
-## Run MCSManager WebUI in Kubernetes
+## 在 Kubernetes 中使用 MCSManager WebUI
 
-> Do not recommend using Daemon in Kubernetes
+> Daemon 不建议在 Kubernetes 中使用
 
-Use Config Map to store custom configuration, if you don't need to customize the configuration, you can skip this step.
+使用 Config Map 存储自定义的配置文件，如果不需要对配置文件进行自定义，可以不创建该资源。
 
-Be aware that the configuration file will be copied into the volume in the InitContainer, so every time you restart the Pod, the configuration file will be overwritten.
+请注意，配置文件是在 InitContainer 中复制进入 Volume 中的，因此在每一次启动中，都会覆盖掉 Volume 中的配置文件
 
 ```yaml
 kind: ConfigMap
@@ -105,9 +105,7 @@ data:
     }
 ```
 
-Create a PersistentVolumeClaim to store data.
-
-You could also use a HostPath volume, depending on your needs.
+使用 PersistentVolumeClaim 存储 MCSManager 的数据，你可以使用 HostPath 或其他的方式来实现。
 
 ```yaml
 apiVersion: v1
@@ -126,7 +124,7 @@ spec:
       storage: 2Gi
 ```
 
-Create Deployment
+创建 Deployment
 
 ```yaml
 apiVersion: apps/v1
@@ -146,7 +144,7 @@ spec:
       labels:
         app: mcsm-web
     spec:
-      # If you do not have custom configurations, you can delete the intiContainers
+      # 如果没有自定义配置文件，不需要下面的 InitContainer
       initContainers:
         - name: configuration
           image: busybox:1.28
@@ -181,7 +179,7 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: mcsm-web-pvc
-        # If you do not have custom configurations, you can delete the volume
+        # 如果没有自定义配置文件，不需要下面的 Volome
         - name: custom-config
           configMap:
             name: mcsm-web-config
@@ -191,9 +189,7 @@ spec:
       restartPolicy: Always
 ```
 
-Create Service, you can change the type according to your needs.
-
-In the example below, we use ClusterIP and Ingress to access the service.
+创建 Service，你可以选择使用其他的方式来暴露服务，此处示例使用 ClusterIP 配合 Ingress 的方式
 
 ```yaml
 apiVersion: v1
@@ -212,7 +208,7 @@ spec:
       targetPort: 23333
 ```
 
-Create Ingress to expose the service.
+创建 Ingress 暴露服务
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -221,16 +217,17 @@ metadata:
   name: mcsm-web-ingress
   namespace: mcsm
   annotations:
-    # If you are using other Ingress Controller, you need to change the annotations
+    # 如果使用其他的 Ingress Controller，需要修改此处
+    # 或者增加其他自定义的 Annotation
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  # If you are using other Ingress Controller, you need to change the ingressClassName
+  # 如果使用其他的 Ingress Controller，需要修改此处
   ingressClassName: "traefik"
   tls:
     - hosts:
         - mcsm.example.com
-      secretName: mcsm-web-cert # The secret in the same namespace that contains the TLS certificate
+      secretName: mcsm-web-cert # SSL 证书 Secret
   rules:
     - host: mcsm.example.com
       http:
