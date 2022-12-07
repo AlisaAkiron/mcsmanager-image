@@ -18,7 +18,7 @@ jobs:
           jq -r ".tag_name" > release-versions/mcsm-version-web.txt
       - name: Check for modified files
         id: git-check
-        run: (if [ -z "`git status --porcelain`" ]; then echo "false" >> $GITHUB_OUTPUT; else echo "true" >> $GITHUB_OUTPUT; fi)
+        run: (if [ -z "`git status --porcelain`" ]; then echo "modified=false" >> $GITHUB_OUTPUT; else echo "modified=true" >> $GITHUB_OUTPUT; fi)
       - name: Get current version file content
         run: cat release-versions/mcsm-version-web.txt
       - name: Commit latest release version
