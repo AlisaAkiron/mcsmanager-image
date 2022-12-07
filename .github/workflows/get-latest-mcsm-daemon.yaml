@@ -19,6 +19,8 @@ jobs:
       - name: Check for modified files
         id: git-check
         run: (echo modified=$([ -z "`git status --porcelain`" ] >> $GITHUB_OUTPUT) && echo "false" || echo "true")
+      - name: Get current version file content
+        run: cat release-versions/mcsm-daemon-version.txt
       - name: Commit latest release version
         if: steps.git-check.outputs.modified == 'true'
         run: |
