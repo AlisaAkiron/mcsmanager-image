@@ -1,8 +1,8 @@
 FROM node:14-alpine
 
-RUN apk --no-cache add git
-RUN git clone https://github.com/MCSManager/MCSManager-Web-Production /opt/mcsmanager/web
-RUN cd /opt/mcsmanager/web && npm i --production
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && apk update && apk add git
+RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
+RUN cd /opt/mcsmanager/daemon && npm i --production
 
 RUN mkdir -p /opt/mcsmanager/web/data
 
