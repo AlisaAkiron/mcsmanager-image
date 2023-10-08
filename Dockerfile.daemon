@@ -1,7 +1,7 @@
-FROM node:14-slim
+FROM node:14-alpine
 
-RUN apt update && apt install -y git
-RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon
+RUN apk --no-cache add git
+RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
 RUN cd /opt/mcsmanager/daemon && npm i --production
 
 RUN mkdir -p /opt/mcsmanager/daemon/data
