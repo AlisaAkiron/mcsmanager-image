@@ -56,7 +56,7 @@ jobs:
         with:
           push: ${{ steps.dispatch-check.outputs.is_workflow_dispatch != 'true' }}
           context: .
-          file: ./Dockerfile.daemon
+          file: ./Dockerfile.web
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
