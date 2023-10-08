@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "release-versions/mcsm-version-daemon.txt"
+  workflow_dispatch:
 
 jobs:
   publish-docker:
