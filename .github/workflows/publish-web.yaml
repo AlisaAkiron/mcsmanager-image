@@ -19,12 +19,31 @@ jobs:
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v2
 
-      - name: Read Version file
+      - name: "Check if triggered by workflow_dispatch"
+        id: dispatch-check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "is_workflow_dispatch=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_workflow_dispatch=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Read Version file"
         id: getversion
         run: echo "version=$(cat release-versions/mcsm-version-web.txt)" >> $GITHUB_OUTPUT
 
-      - name: "Run build docker script"
-        run: ./build-docker-web.sh ${{ steps.getversion.outputs.version }}
+      - name: "Docker: Metadata"
+        id: docker-meta
+        uses: docker/metadata-action@v4
+        with:
+          images: docker.io/alisaqaq/mcsmanager-web
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.getversion.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.getversion.outputs.version }}
+            type=semver,pattern={{major}},value=${{ steps.getversion.outputs.version }}
+            type=raw,value=latest,enable=true
+            type=ref,event=pr
+            type=sha
 
       - name: "Login to Docker Hub"
         uses: docker/login-action@v2
@@ -32,5 +51,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: "Push image to Docker Hub"
-        run: ./push-docker-web.sh ${{ steps.getversion.outputs.version }} ${{ secrets.DOCKERHUB_USERNAME }}
+      - name: "Docker: Build and Push Image"
+        uses: docker/build-push-action@v3
+        with:
+          push: ${{ steps.dispatch-check.outputs.is_workflow_dispatch != 'true' }}
+          context: .
+          file: ./Dockerfile.daemon
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}
