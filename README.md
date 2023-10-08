@@ -7,10 +7,10 @@ Docker Image for [MCSManager](https://github.com/MCSManager/MCSManager/)
 ## Tag
 
 - `latest`：The latest version
-- `9.6.0-amd64`：Specific version and architecture
 - `9.6.0`：Specific version, the corresponding image will be selected automatically according to the system architecture
 - `9.6`：Specific major and minor version, the latest Patch version will be pointed to
 - `9`：Specific major version, the latest version under the current major version number will be pointed to
+- `sha-e278f4c`: Specific commit
 
 ## Usage
 
